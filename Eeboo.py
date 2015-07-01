@@ -15,6 +15,10 @@ class Eeboo(ControlSurface):
     def __init__(self, c_instance):
         ControlSurface.__init__(self, c_instance)
         self.log_message("Hello world!")
+        self.show_message("Hack enabled! Let's get groove!")
+        self.log_message("ok!")
+
 
     def _on_selected_scene_changed(self):
         self.log_message("Selected scene changed!")
+        self.show_message("Hack enabled! Let's get groove!")

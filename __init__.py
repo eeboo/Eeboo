@@ -5,7 +5,7 @@ from _Framework.Debug import debug_print
 
 
 def create_instance(c_instance):
-	""" Creates and returns the Launchpad script """
+	""" Creates and returns the Launchpad script  """
 	return Eeboo(c_instance)
 
 
