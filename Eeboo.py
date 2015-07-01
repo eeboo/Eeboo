@@ -22,3 +22,4 @@ class Eeboo(ControlSurface):
     def _on_selected_scene_changed(self):
         self.log_message("Selected scene changed!")
         self.show_message("Hack enabled! Let's get groove!")
+        self.log_message(Live.Song.Song.View.highlighted_clip_slot.canonical_parent())
