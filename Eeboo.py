@@ -16,13 +16,15 @@ class Eeboo(ControlSurface):
         ControlSurface.__init__(self, c_instance)
         self.log_message("Hello world!")
         self.show_message("Hack enabled! Let's get groove!")
+        self.song().view.add_detail_clip_listener(self.on_selected_clip)
 
-
-    def _on_selected_scene_changed(self):
-        self.log_message("Selected scene changed!")
-        self.show_message("Hack enabled! Let's get groove!")
-        _slot = self._playing_clip_slot()
-        self.log_message( _slot.clip.name )
+    def on_selected_clip(self):
+        _selected_clip = self.song().view.detail_clip
+        if _selected_clip.name != None:
+            _name = _selected_clip.name
+        if _name != None:
+            self.show_message(_selected_clip.name)
+            self.log_message(_selected_clip.name)
 
     def _playing_clip_slot(self):
         track = self.song().view.selected_track
