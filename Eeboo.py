@@ -10,34 +10,50 @@ from eeboo_utils import make_button
 #SIDE_NOTES = (8, 24, 40, 56, 72, 88, 104, 120)
 #DRUM_NOTES = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
 
+IS_MOMENTARY=True
+
 class Eeboo(ControlSurface):
     """ Script for Eeboo's Controller """
+    __module__=__name__                  #name of the class
+    __doc__="Eeboo function"           #documentation 
 
     def __init__(self, c_instance):
-        ControlSurface.__init__(self, c_instance)
+        super(Eeboo, self).__init__(c_instance)
+        with self.component_guard():               #don't know the us of this, but it is recquiered in live 9 scripts
+            self.__c_instance = c_instance
+            self.Pad1=ButtonElement(IS_MOMENTARY, MIDI_NOTE_TYPE, 0,60) # identifies P&d1 as a ButtonElement. IS_MOMENTARY is true if the button send a message on being released
 
-        self.show_message("Hack enabled! Let's get groove!")
+            self.show_message("Hack enabled! Let's get groove!")
 
-        ############ TODO => use it ######### 
-        self._clip = None
-        self._is_active = True
-        self._playing_position_buttons = True
-        self._is_following = True
+            ############ TODO => use it ######### 
+            self._clip = None
+            self._is_active = True
+            self._playing_position_buttons = True
+            self._is_following = True
         
-        self._quantization = 0.25
+            self._quantization = 0.25
         
-        # Playhead current position
-        self._row_index = None
-        self._column_index = None
+            # Playhead current position
+            self._row_index = None
+            self._column_index = None
 
-        # number of buttons per row
-        self._width = 8
+            # number of buttons per row
+            self._width = 8
 
-        # number of row of 8 buttons
-        self.bank_display_capabilities = 2
-        #####################################
+            # number of row of 8 buttons
+            self.bank_display_capabilities = 2
+            #####################################
+        
+            
+            row_1 = [ make_button(1, 36 + idx) for idx in reversed(xrange(8)) ]
+            row_2 = [ make_button(1, 45 + idx) for idx in reversed(xrange(8)) ]
+            self._side_buttons = ButtonMatrixElement(name='Scene_Launch_Buttons', rows=[ row_1, row_2 ])
+            self.show_message( "width: " +  str( self._side_buttons.width() ) )
+            self.log_message( "width: " +  str( self._side_buttons.width() ) )
 
-        self.song().view.add_detail_clip_listener(self._on_selected_clip)
+            button = ButtonElement(True, MIDI_CC_TYPE, 0, 36, name='button_name')
+
+            self.song().view.add_detail_clip_listener(self._on_selected_clip)
 
     
     def _on_selected_clip(self):
