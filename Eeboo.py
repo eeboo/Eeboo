@@ -45,11 +45,9 @@ class Eeboo(ControlSurface):
             #####################################
         
             
-            row_1 = [ make_button(1, 36 + idx) for idx in reversed(xrange(8)) ]
-            row_2 = [ make_button(1, 45 + idx) for idx in reversed(xrange(8)) ]
-            self._side_buttons = ButtonMatrixElement(name='Scene_Launch_Buttons', rows=[ row_1, row_2 ])
-            self.show_message( "width: " +  str( self._side_buttons.width() ) )
-            self.log_message( "width: " +  str( self._side_buttons.width() ) )
+            row_1 = [ make_button(1, 36 + idx) for idx in xrange(8) ]
+            row_2 = [ make_button(1, 45 + idx) for idx in xrange(8) ]
+            self._grid_buttons = ButtonMatrixElement(name='Scene_Launch_Buttons', rows=[ row_1, row_2 ])
 
             button = ButtonElement(True, MIDI_CC_TYPE, 0, 36, name='button_name')
 
@@ -112,12 +110,23 @@ class Eeboo(ControlSurface):
                     
                     column = int(position / self._quantization) - (row * self._width) #stepped postion
 
+                    if( row != self._row_index or column != self._column_index ):
+                        self._row_index = row
+                        self._column_index = column
+                        
+                        self.log_message( "row:" + str(row) + "column:" + str(column))
+                        
+                        for button, (y, x) in self._grid_buttons.iterbuttons():
+                            #self.log_message('x:'+str(x)+' y:'+str(y))
+                            if(  row == x and y == column  ):
+                                #self.log_message( 'row: ' +  str(row) + ' ,column:' + str(column) )
+                                button.turn_on()
+                                self.log_message('turn on: ' + str(button.message_identifier()) + "  row:" + str(x) + "column:" + str(y))
+                            else:    
+                                button.turn_off()
+                    else:
+                        self.log_message( '#####' )
+
+                    
 
 
-                    """for index in range(self._width):
-                        if index == grid_position and grid_position < self._width and self._bank_index == bank:
-                            self._playing_position_buttons[index].turn_on()
-                        else:
-                            self._playing_position_buttons[index].turn_off()"""
-                    self.log_message( 'column:' + str(column) )
-                    self.log_message( 'row:' + str(row) )
