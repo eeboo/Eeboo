@@ -5,7 +5,7 @@ from _Framework.ControlSurface import ControlSurface
 from _Framework.InputControlElement import *
 from _Framework.ButtonElement import ButtonElement
 from _Framework.ButtonMatrixElement import ButtonMatrixElement
-from eeboo_utils import make_button
+from eeboo_utils import *
 
 #SIDE_NOTES = (8, 24, 40, 56, 72, 88, 104, 120)
 #DRUM_NOTES = (41, 42, 43, 44, 45, 46, 47, 57, 58, 59, 60, 61, 62, 63, 73, 74, 75, 76, 77, 78, 79, 89, 90, 91, 92, 93, 94, 95, 105, 106, 107)
@@ -19,9 +19,10 @@ class Eeboo(ControlSurface):
 
     def __init__(self, c_instance):
         super(Eeboo, self).__init__(c_instance)
+
         with self.component_guard():               #don't know the us of this, but it is recquiered in live 9 scripts
             self.__c_instance = c_instance
-            self.Pad1=ButtonElement(IS_MOMENTARY, MIDI_NOTE_TYPE, 0,60) # identifies P&d1 as a ButtonElement. IS_MOMENTARY is true if the button send a message on being released
+             # identifies P&d1 as a ButtonElement. IS_MOMENTARY is true if the button send a message on being released
 
             self.show_message("Hack enabled! Let's get groove!")
 
@@ -45,8 +46,8 @@ class Eeboo(ControlSurface):
             #####################################
         
             
-            row_1 = [ make_button(1, 36 + idx) for idx in xrange(8) ]
-            row_2 = [ make_button(1, 45 + idx) for idx in xrange(8) ]
+            row_1 = [ make_button(0, 36 + idx) for idx in xrange(8) ]
+            row_2 = [ make_button(0, 45 + idx) for idx in xrange(8) ]
             self._grid_buttons = ButtonMatrixElement(name='Scene_Launch_Buttons', rows=[ row_1, row_2 ])
 
             button = ButtonElement(True, MIDI_CC_TYPE, 0, 36, name='button_name')
@@ -120,10 +121,12 @@ class Eeboo(ControlSurface):
                             #self.log_message('x:'+str(x)+' y:'+str(y))
                             if(  row == x and y == column  ):
                                 #self.log_message( 'row: ' +  str(row) + ' ,column:' + str(column) )
-                                button.turn_on()
-                                self.log_message('turn on: ' + str(button.message_identifier()) + "  row:" + str(x) + "column:" + str(y))
+                                #button.turn_on()
+                                self._send_midi((176, button.message_identifier() ,127))
+                                #self.log_message('turn on: ' + str(button.message_identifier()) + "  row:" + str(x) + "column:" + str(y))
                             else:    
-                                button.turn_off()
+                                #button.turn_off()
+                                self._send_midi((176, button.message_identifier(),0))
                     else:
                         self.log_message( '#####' )
 
