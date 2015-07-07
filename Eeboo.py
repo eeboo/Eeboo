@@ -45,12 +45,10 @@ class Eeboo(ControlSurface):
             self.bank_display_capabilities = 2
             #####################################
         
-            
+            # TODO remove line here :: not usefull
             row_1 = [ make_button(0, 36 + idx) for idx in xrange(8) ]
             row_2 = [ make_button(0, 45 + idx) for idx in xrange(8) ]
             self._grid_buttons = ButtonMatrixElement(name='Scene_Launch_Buttons', rows=[ row_1, row_2 ])
-
-            button = ButtonElement(True, MIDI_CC_TYPE, 0, 36, name='button_name')
 
             self.song().view.add_detail_clip_listener(self._on_selected_clip)
 
@@ -78,6 +76,8 @@ class Eeboo(ControlSurface):
                 self._clip.add_playing_status_listener(self._on_playing_status_changed)
                 self._clip.add_playing_position_listener(self._on_playing_position_changed)
 
+            self.update_matrix_with_notes()
+
 
     def _on_playing_status_changed(self):
         self.log_message( " on_playing_status_changed: "  )
@@ -90,6 +90,15 @@ class Eeboo(ControlSurface):
     def is_enabled(self):
     	return True
 
+    """ note tuple (63, 0.0, 2.5, 100, False) pitch = 63, start = 0.0, length = 0.0, velocity = 100 """
+    def update_matrix_with_notes(self):
+        notes = self._clip.get_notes(0.0, 0, self._clip.length, 127)
+        for note in notes:
+            start = note[1]
+            index = start / self._quantization
+            button = self._grid_buttons[ int(index) ]
+            self._send_midi((176, button.message_identifier() ,127))
+            self.log_message( "note on: " +str(index) )
 
 
     def __on_playing_position_changed(self): #playing position changed listener
@@ -103,11 +112,6 @@ class Eeboo(ControlSurface):
                     position = self._sequencer_clip.playing_position #position in beats (1/4 notes in 4/4 time)
                     
                     row = int(position / self._quantization / self._width) # 0.25 for 16th notes;  0.5 for 8th notes
-                    #if self._is_following == True:
-                        #if self._row_index != row:
-                            #self._row_index = row
-                            #self._update_bank_buttons()
-                            #self._update_matrix()
                     
                     column = int(position / self._quantization) - (row * self._width) #stepped postion
 
@@ -122,13 +126,19 @@ class Eeboo(ControlSurface):
                             if(  row == x and y == column  ):
                                 #self.log_message( 'row: ' +  str(row) + ' ,column:' + str(column) )
                                 #button.turn_on()
+                                #self._grid_buttons.set_light(x, y, True)
                                 self._send_midi((176, button.message_identifier() ,127))
                                 #self.log_message('turn on: ' + str(button.message_identifier()) + "  row:" + str(x) + "column:" + str(y))
                             else:    
                                 #button.turn_off()
+                                #self._grid_buttons.set_light(x, y, False)
                                 self._send_midi((176, button.message_identifier(),0))
                     else:
                         self.log_message( '#####' )
+
+                    self.update_matrix_with_notes()
+
+
 
                     
 
