@@ -55,8 +55,6 @@ class Eeboo(ControlSurface):
     
     def _on_selected_clip(self):
 
-        self.log_message(" _on_selected_clip ")
-
         # add_detail_clip_listener is triggered even slot is empty
         if self.song().view.detail_clip != None:
 
