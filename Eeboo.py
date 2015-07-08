@@ -46,11 +46,28 @@ class Eeboo(ControlSurface):
             #####################################
         
             # TODO remove line here :: not usefull
-            row_1 = [ make_button(0, 36 + idx) for idx in xrange(8) ]
-            row_2 = [ make_button(0, 45 + idx) for idx in xrange(8) ]
+            row_1 = [ make_button(0, 32 + idx) for idx in xrange(8) ]
+            row_2 = [ make_button(0, 48 + idx) for idx in xrange(8) ]
             self._grid_buttons = ButtonMatrixElement(name='Scene_Launch_Buttons', rows=[ row_1, row_2 ])
 
+            for pad in self._grid_buttons:
+                pad.add_value_listener(self.on_pad_pressed, identify_sender= False)
+
             self.song().view.add_detail_clip_listener(self._on_selected_clip)
+
+            #self.song().add_current_song_time_listener(self._song_time_listener)
+
+    def build_midi_map(self, midi_map_handle):      
+        ControlSurface.build_midi_map(self, midi_map_handle)
+        self.log_message( "midi"+str(midi_map_handle) )
+
+    def receive_midi(self, midi_bytes):
+        ControlSurface.receive_midi(self, midi_bytes)
+        self.log_message("receive"+ str(midi_bytes) )
+
+
+    def on_pad_pressed(self, value):
+        self.log_message( 'pad pressed' + str(value) )
 
     
     def _on_selected_clip(self):
